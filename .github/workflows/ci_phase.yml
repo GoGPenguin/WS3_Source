@@ -2,7 +2,7 @@ name: CI Phase
 
 on:
     push:
-        branches: ["*"]
+        branches: ["secretRegistry"]
 
 jobs:
   build_dev:
@@ -16,6 +16,15 @@ jobs:
         DATASOURCE_PASSWORD: ${{ secrets.DATASOURCE_PASSWORD }}
         BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
         CLOUDFRONT_ID: ${{ secrets.CLOUDFRONT_ID }}
+        ARTIFACT_BUCKET_NAME: ${{ secrets.ARTIFACT_BUCKET_NAME }}
+
+        TASK_ROLE_ARN: ${{ secrets.TASK_ROLE_ARN }}
+        TASK_EXECUTION_ROLE_ARN: ${{ secrets.TASK_EXECUTION_ROLE_ARN }}
+        AWS_REGION: ap-southeast-1
+        API_PORT: ${{ secrets.API_PORT }}
+        SUBNET_ID_A: ${{ secrets.SUBNET_ID_A }}
+        SUBNET_ID_B: ${{ secrets.SUBNET_ID_B }}
+        SECURITY_GROUP_ID: ${{ secrets.SECURITY_GROUP_ID }}
 
     steps:
       - uses: actions/checkout@v4
@@ -52,19 +61,9 @@ jobs:
           echo "DB_NAME=${{ secrets.DB_NAME}}" >> .env
           echo "DB_HOST=${{ secrets.DB_HOST}}" >> .env
 
-          cd ../client
-          touch .env
-          echo "REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL }}" >> .env
-        continue-on-error: false
 
-      - name: Build and push client
-        run: |
-          pwd
-          cd client
-          npm install
-          npm run build
-          aws s3 sync build/ s3://$BUCKET_NAME --delete
-          aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_ID --paths '/*'
+          envsubst < deploy/aws/appspec_template.yml > appspec.yml
+          envsubst < deploy/aws/taskdef_template.json > taskdef.json 
         continue-on-error: false
 
       - name: Build and push server
@@ -77,4 +76,10 @@ jobs:
           docker tag "server:${{ env.SHA }}" "${{ env.ECR_URL }}:${{ env.SHA }}"
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ env.ECR_URL }}
           docker push "${{ env.ECR_URL }}:${{ env.SHA }}"
+
+          printf '{ImageURI: "%s"}' "${{ env.ECR_URL }}:${{ env.SHA }}" > imageDetail.json
+
+          zip appspec.zip appspec.yml imageDetail.json taskdef.json
+          ls -la 
+          aws s3 cp appspec.zip s3://${{ env.ARTIFACT_BUCKET_NAME }}
         continue-on-error: false

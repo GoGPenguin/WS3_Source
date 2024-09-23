@@ -1,0 +1,52 @@
+{
+    "family": "ws3_test",
+    "networkMode": "awsvpc",
+    "taskRoleArn": "$TASK_ROLE",
+    "executionRoleArn": "$TASK_EXECUTION_ROLE",
+    "containerDefinitions": [
+        {
+            "name": "w3_test",
+            "image": "<IMAGE_NAME>",
+            "portMappings": [
+                {
+                    "hostPort": $API_PORT,
+                    "protocol": "tcp",
+                    "containerPort": $API_PORT
+                }
+            ],
+            "ulimits": [
+                {
+                    "name": "nofile",
+                    "softLimit": 1024000,
+                    "hardLimit": 1024000
+                }
+            ],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "ws3_test",
+                    "awslogs-region": "$AWS_REGION"
+                }
+            }
+        }
+    ],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "256",
+    "memory": "512",
+    "runParams": {
+        "networkConfiguration": {
+            "awsvpcConfiguration": {
+                "subnets": [
+                    "$SUBNET_ID_A",
+                    "$SUBNET_ID_B"
+                ],
+                "securityGroups": [
+                    "$SECURITY_GROUP_ID"
+                ],
+                "assignPublicIp": "DISABLED"
+            }
+        }
+    }
+}
