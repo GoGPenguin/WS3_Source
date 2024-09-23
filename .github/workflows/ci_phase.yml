@@ -77,7 +77,7 @@ jobs:
           docker tag "server:${{ env.SHA }}" "${{ env.ECR_URL }}:${{ env.SHA }}"
           docker push "${{ env.ECR_URL }}:${{ env.SHA }}"
 
-          printf '{"ImageURI": "%s"}' "${{ env.ECR_URL }}:${{ env.SHA }}" > imageDetail.json
+          printf '{"ImageURI": "%s"}'"${{ env.ECR_URL }}:${{ env.SHA }}" > imageDetail.json
 
           zip appspec.zip appspec.yml imageDetail.json taskdef.json
           ls -la 
