@@ -73,9 +73,9 @@ jobs:
         run: |
           cd server
           docker build -t "server:${{ env.SHA }}" .
-          docker tag "server:${{ env.SHA }}" "${{ env.ECR_URL }}:${{ env.SHA }}"
+          docker tag "server:${{ env.SHA }}" "${{ env.ECR_URL }}/ws3/server:${{ env.SHA }}"
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ env.ECR_URL }}
-          docker push "${{ env.ECR_URL }}:${{ env.SHA }}"
+          docker push "${{ env.ECR_URL }}/ws3/server:${{ env.SHA }}"
 
           printf '{ImageURI: "%s"}' "${{ env.ECR_URL }}:${{ env.SHA }}" > imageDetail.json
 
