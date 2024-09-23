@@ -1,8 +1,8 @@
 {
     "family": "ws3_test",
     "networkMode": "awsvpc",
-    "taskRoleArn": "$TASK_ROLE",
-    "executionRoleArn": "$TASK_EXECUTION_ROLE",
+    "taskRoleArn": "$TASK_ROLE_ARN",
+    "executionRoleArn": "$TASK_EXECUTION_ROLE_ARN",
     "containerDefinitions": [
         {
             "name": "w3_test",
@@ -25,7 +25,8 @@
                 "logDriver": "awslogs",
                 "options": {
                     "awslogs-group": "ws3_test",
-                    "awslogs-region": "$AWS_REGION"
+                    "awslogs-region": "$AWS_REGION",
+                    "awslogs-stream-prefix": "ws_3"
                 }
             }
         }
