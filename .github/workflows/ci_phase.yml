@@ -83,6 +83,6 @@ jobs:
 
           zip appspec.zip appspec.yml imageDetail.json taskdef.json
           ls -la 
-          cat appspec.yml
+          cat imageDetail.json
           aws s3 cp appspec.zip s3://${{ env.ARTIFACT_BUCKET_NAME }}
         continue-on-error: false
