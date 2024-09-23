@@ -79,9 +79,7 @@ jobs:
 
           printf '{"ImageURI": "%s"}' "${{ env.ECR_URL }}:${{ env.SHA }}" > imageDetail.json
 
-          aws s3 cp imageDetail.json s3://${{ env.ARTIFACT_BUCKET_NAME }}
-
-        # zip appspec.zip appspec.yml imageDetail.json taskdef.json
-        # ls -la 
-        # aws s3 cp appspec.zip s3://${{ env.ARTIFACT_BUCKET_NAME }}
+          zip appspec.zip appspec.yml imageDetail.json taskdef.json
+          ls -la 
+          aws s3 cp appspec.zip s3://${{ env.ARTIFACT_BUCKET_NAME }}
         continue-on-error: false
