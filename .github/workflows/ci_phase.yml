@@ -77,10 +77,12 @@ jobs:
           docker tag "server:${{ env.SHA }}" "${{ env.ECR_URL }}:${{ env.SHA }}"
           docker push "${{ env.ECR_URL }}:${{ env.SHA }}"
 
-          printf '{"ImageURI":"%s"}' ${{ env.ECR_URL }}:${{ env.SHA }} > imageDetail.json
+          echo '{"ImageURI":"'"${ECR_URL}:${SHA}"'"}' > imageDetail.json
+
 
 
           zip appspec.zip appspec.yml imageDetail.json taskdef.json
           ls -la 
+          cat appspec.yml
           aws s3 cp appspec.zip s3://${{ env.ARTIFACT_BUCKET_NAME }}
         continue-on-error: false
