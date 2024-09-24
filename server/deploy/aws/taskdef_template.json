@@ -24,7 +24,7 @@
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "ws3_test",
+                    "awslogs-group": "ws3-test",
                     "awslogs-region": "$AWS_REGION",
                     "awslogs-stream-prefix": "ecs"
                 }
