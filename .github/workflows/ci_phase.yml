@@ -54,6 +54,8 @@ jobs:
           aws-region: ap-southeast-1
         continue-on-error: false
 
+
+
       - name: Pre-build
         run: |
           cd server
@@ -68,6 +70,20 @@ jobs:
 
           envsubst < deploy/aws/appspec_template.yml > appspec.yml
           envsubst < deploy/aws/taskdef_template.json > taskdef.json
+
+          cd ../client
+          touch .env
+          echo "REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL }}" >> .env
+        continue-on-error: false
+
+      - name: Build and push client
+        run: |
+          pwd
+          cd client
+          npm install
+          npm run build
+          aws s3 sync build/ s3://$BUCKET_NAME --delete
+          aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_ID --paths '/*'
         continue-on-error: false
 
       - name: Build and push server
