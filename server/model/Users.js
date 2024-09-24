@@ -19,10 +19,10 @@ const User = sequelize.define(
     gender: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-    }
+    },
   },
   {
-    tableName: "user",
+    tableName: "users",
     timestamps: false,
   }
 );
