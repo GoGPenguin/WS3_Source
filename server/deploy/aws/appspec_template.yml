@@ -3,7 +3,7 @@ Resources:
   - TargetService:
       Type: AWS::ECS::Service
       Properties:
-        TaskDefinition: <TASK_DEF>
+        TaskDefinition: <TASK_DEFINITION>
         LoadBalancerInfo:
           ContainerName: "w3_test"
           ContainerPort: $API_PORT
