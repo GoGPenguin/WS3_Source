@@ -66,6 +66,7 @@ jobs:
           echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
           echo "DB_NAME=${{ secrets.DB_NAME}}" >> .env
           echo "DB_HOST=${{ secrets.DB_HOST}}" >> .env
+          cat .env
 
 
           envsubst < deploy/aws/appspec_template.yml > appspec.yml
@@ -74,12 +75,13 @@ jobs:
           cd ../client
           touch .env
           echo "REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL }}" >> .env
+          cat .env
         continue-on-error: false
 
       - name: Build and push client
         run: |
-          pwd
           cd client
+          ls -la
           npm install
           npm run build
           aws s3 sync build/ s3://$BUCKET_NAME --delete
@@ -92,6 +94,7 @@ jobs:
           BRANCH: ${{ steps.extract_branch.outputs.branch }}
         run: |
           cd server
+          ls -la
           docker build -t "server:${{ env.SHA }}" .
           aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin ${{ env.ECR_URL }}
           docker tag "server:${{ env.SHA }}" "${{ env.ECR_URL }}:${{ env.SHA }}"
@@ -100,7 +103,5 @@ jobs:
           printf '{"ImageURI":"%s"}' $ECR_URL:$SHA > imageDetail.json
 
           zip appspec.zip appspec.yml imageDetail.json taskdef.json
-          ls -la 
-          cat imageDetail.json
           aws s3 cp appspec.zip s3://${{ env.ARTIFACT_BUCKET_NAME }}
         continue-on-error: false
